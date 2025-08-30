@@ -1,7 +1,5 @@
-// src/index.ts
 
 import express, { type Express, type Request, type Response } from 'express';
-
 // Crea una instancia de la aplicación Express
 const app: Express = express();
 const port: number = 3000;
