@@ -1,0 +1,13 @@
+node_modules/
+npm-debug.log*
+dist/
+build/
+*.tsbuildinfo
+.env
+logs
+*.log
+.cache/
+.npm
+.eslintcache
+.vscode/
+
