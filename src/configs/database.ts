@@ -1,11 +1,17 @@
-import Mongoose from "mongoose";
+import mongoose from "mongoose";
 import { config } from "dotenv";
 
 config();
 
 const databaseURL = process.env.DATABASE_URL;
 
-Mongoose.connect(databaseURL)
+const connection = async () => {
+if(!databaseURL) {
+    throw new Error("DATABASE_URL is not defined, you need to set it in the .env file");
+}
+
+
+await mongoose.connect(databaseURL!)
     .then(() => {
         console.log("Connected to database");
     })
@@ -13,5 +19,6 @@ Mongoose.connect(databaseURL)
 
         console.error("Error connecting to database", error);
     });
+}
 
-export default Mongoose;
+export default connection;
