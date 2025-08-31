@@ -1,6 +1,6 @@
 
 import express, { type Express, type Request, type Response } from 'express';
-import connection from './configs/database.ts';
+import connection from './configs/database.js';
 // Crea una instancia de la aplicación Express
 const app: Express = express();
 const port: number = 3000;
