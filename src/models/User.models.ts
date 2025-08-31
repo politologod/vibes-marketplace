@@ -27,40 +27,40 @@ const UserSchema: Schema = new Schema({
   cuentasBancarias: [{
     banco: {
       type: String,
-      required: true,
+      required: false,
       trim: true
     },
     numeroCuenta: {
       type: String,
-      required: true,
+      required: false,
       trim: true
     },
     tipoCuenta: {
       type: String,
       enum: ['ahorro', 'corriente'],
-      required: true
+      required: false
     }
   }],
   pagoMovil: {
     banco: {
       type: String,
-      required: true,
+      required: false,
       trim: true
     },
     telefono: {
       type: String,
-      required: true,
+      required: false,
       trim: true
     },
     cedula: {
       type: String,
-      required: true,
+      required: false,
       trim: true
     }
   },
   correoBinanceUSDT: {
     type: String,
-    required: true,
+    required: false,
     lowercase: true,
     trim: true
   },
