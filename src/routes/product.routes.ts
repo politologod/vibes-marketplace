@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { authMiddleware, optionalAuth } from '../middleware/auth.middleware.js';
+import { isProductOwner } from '../middleware/ownership.middleware.js';
 import {
   crearProducto,
   obtenerProductos,
@@ -24,6 +26,8 @@ const router = Router();
  *   post:
  *     summary: Crear un nuevo producto
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -39,14 +43,16 @@ const router = Router();
  *               $ref: '#/components/schemas/Success'
  *       400:
  *         description: Error en los datos enviados
+ *       401:
+ *         description: Token requerido
  */
-router.post('/', crearProducto);
+router.post('/', authMiddleware, crearProducto);
 
 /**
  * @swagger
  * /api/products:
  *   get:
- *     summary: Obtener lista de productos con filtros
+ *     summary: Obtener lista de productos con filtros (público)
  *     tags: [Products]
  *     parameters:
  *       - in: query
@@ -94,13 +100,13 @@ router.post('/', crearProducto);
  *             schema:
  *               $ref: '#/components/schemas/PaginatedProducts'
  */
-router.get('/', obtenerProductos);
+router.get('/', optionalAuth, obtenerProductos);
 
 /**
  * @swagger
  * /api/products/search:
  *   get:
- *     summary: Búsqueda de productos con scoring
+ *     summary: Búsqueda de productos con scoring (público)
  *     tags: [Products]
  *     parameters:
  *       - in: query
@@ -139,13 +145,13 @@ router.get('/', obtenerProductos);
  *       400:
  *         description: Parámetro de búsqueda requerido
  */
-router.get('/search', buscarProductos);
+router.get('/search', optionalAuth, buscarProductos);
 
 /**
  * @swagger
  * /api/products/categorias:
  *   get:
- *     summary: Obtener todas las categorías disponibles
+ *     summary: Obtener todas las categorías disponibles (público)
  *     tags: [Products]
  *     responses:
  *       200:
@@ -168,7 +174,7 @@ router.get('/categorias', obtenerCategorias);
  * @swagger
  * /api/products/{id}:
  *   get:
- *     summary: Obtener producto por ID
+ *     summary: Obtener producto por ID (público)
  *     tags: [Products]
  *     parameters:
  *       - in: path
@@ -192,14 +198,16 @@ router.get('/categorias', obtenerCategorias);
  *       404:
  *         description: Producto no encontrado
  */
-router.get('/:id', obtenerProductoPorId);
+router.get('/:id', optionalAuth, obtenerProductoPorId);
 
 /**
  * @swagger
  * /api/products/{id}:
  *   put:
- *     summary: Actualizar producto
+ *     summary: Actualizar producto (solo el dueño)
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -220,17 +228,23 @@ router.get('/:id', obtenerProductoPorId);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Success'
+ *       401:
+ *         description: Token requerido
+ *       403:
+ *         description: Sin permisos para modificar este producto
  *       404:
  *         description: Producto no encontrado
  */
-router.put('/:id', actualizarProducto);
+router.put('/:id', authMiddleware, isProductOwner, actualizarProducto);
 
 /**
  * @swagger
  * /api/products/{id}:
  *   delete:
- *     summary: Eliminar producto
+ *     summary: Eliminar producto (solo el dueño)
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -250,9 +264,13 @@ router.put('/:id', actualizarProducto);
  *                   type: boolean
  *                 message:
  *                   type: string
+ *       401:
+ *         description: Token requerido
+ *       403:
+ *         description: Sin permisos para eliminar este producto
  *       404:
  *         description: Producto no encontrado
  */
-router.delete('/:id', eliminarProducto);
+router.delete('/:id', authMiddleware, isProductOwner, eliminarProducto);
 
 export default router;

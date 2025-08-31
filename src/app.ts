@@ -4,9 +4,19 @@ import connection from './configs/database.js';
 import productRoutes from './routes/product.routes.js';
 import userRoutes from './routes/user.routes.js';
 import { swaggerUi, specs } from './configs/swagger.js';
-// Crea una instancia de la aplicación Express
+import cors from 'cors';
+
+
+
 const app: Express = express();
 const port: number = 3000;
+
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173', 'http://localhost:4200'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
+}));
 
 // Middleware para parsear JSON (opcional pero común)
 app.use(express.json());
@@ -16,7 +26,7 @@ connection();
 
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
-
+app.use('/api/auth', authRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'Vibes Marketplace API Documentation'

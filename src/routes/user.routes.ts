@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { authMiddleware } from '../middleware/auth.middleware.js';
+import { isUserOwner } from '../middleware/ownership.middleware.js';
 import {
   crearUsuario,
   obtenerUsuarios,
@@ -27,6 +29,8 @@ const router = Router();
  *   post:
  *     summary: Crear un nuevo usuario
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -46,15 +50,19 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Token requerido
  */
-router.post('/', crearUsuario);
+router.post('/', authMiddleware, crearUsuario);
 
 /**
  * @swagger
  * /api/users:
  *   get:
- *     summary: Obtener lista de usuarios
+ *     summary: Obtener lista de usuarios (protegido)
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -89,14 +97,16 @@ router.post('/', crearUsuario);
  *                     $ref: '#/components/schemas/User'
  *                 pagination:
  *                   type: object
+ *       401:
+ *         description: Token requerido
  */
-router.get('/', obtenerUsuarios);
+router.get('/', authMiddleware, obtenerUsuarios);
 
 /**
  * @swagger
  * /api/users/verificar-correo/{correo}:
  *   get:
- *     summary: Verificar si un correo ya existe
+ *     summary: Verificar si un correo ya existe (público)
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -115,7 +125,7 @@ router.get('/verificar-correo/:correo', verificarCorreoExiste);
  * @swagger
  * /api/users/verificar-cedula/{cedula}:
  *   get:
- *     summary: Verificar si una cédula ya existe
+ *     summary: Verificar si una cédula ya existe (público)
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -134,8 +144,10 @@ router.get('/verificar-cedula/:cedula', verificarCedulaExiste);
  * @swagger
  * /api/users/cedula/{cedula}:
  *   get:
- *     summary: Obtener usuario por cédula
+ *     summary: Obtener usuario por cédula (protegido)
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: cedula
@@ -150,17 +162,21 @@ router.get('/verificar-cedula/:cedula', verificarCedulaExiste);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Success'
+ *       401:
+ *         description: Token requerido
  *       404:
  *         description: Usuario no encontrado
  */
-router.get('/cedula/:cedula', obtenerUsuarioPorCedula);
+router.get('/cedula/:cedula', authMiddleware, obtenerUsuarioPorCedula);
 
 /**
  * @swagger
  * /api/users/{id}:
  *   get:
- *     summary: Obtener usuario por ID
+ *     summary: Obtener usuario por ID (protegido)
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -171,17 +187,21 @@ router.get('/cedula/:cedula', obtenerUsuarioPorCedula);
  *     responses:
  *       200:
  *         description: Usuario encontrado
+ *       401:
+ *         description: Token requerido
  *       404:
  *         description: Usuario no encontrado
  */
-router.get('/:id', obtenerUsuarioPorId);
+router.get('/:id', authMiddleware, obtenerUsuarioPorId);
 
 /**
  * @swagger
  * /api/users/{id}:
  *   put:
- *     summary: Actualizar usuario
+ *     summary: Actualizar usuario (solo el propio usuario)
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -198,17 +218,23 @@ router.get('/:id', obtenerUsuarioPorId);
  *     responses:
  *       200:
  *         description: Usuario actualizado exitosamente
+ *       401:
+ *         description: Token requerido
+ *       403:
+ *         description: Solo puedes modificar tu propia información
  *       404:
  *         description: Usuario no encontrado
  */
-router.put('/:id', actualizarUsuario);
+router.put('/:id', authMiddleware, isUserOwner, actualizarUsuario);
 
 /**
  * @swagger
  * /api/users/{id}/cuentas-bancarias:
  *   put:
- *     summary: Actualizar cuentas bancarias del usuario
+ *     summary: Actualizar cuentas bancarias del usuario (solo el propio usuario)
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -229,15 +255,21 @@ router.put('/:id', actualizarUsuario);
  *     responses:
  *       200:
  *         description: Cuentas bancarias actualizadas
+ *       401:
+ *         description: Token requerido
+ *       403:
+ *         description: Solo puedes modificar tu propia información
  */
-router.put('/:id/cuentas-bancarias', actualizarCuentasBancarias);
+router.put('/:id/cuentas-bancarias', authMiddleware, isUserOwner, actualizarCuentasBancarias);
 
 /**
  * @swagger
  * /api/users/{id}/pago-movil:
  *   put:
- *     summary: Actualizar información de pago móvil
+ *     summary: Actualizar información de pago móvil (solo el propio usuario)
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -247,15 +279,21 @@ router.put('/:id/cuentas-bancarias', actualizarCuentasBancarias);
  *     responses:
  *       200:
  *         description: Pago móvil actualizado
+ *       401:
+ *         description: Token requerido
+ *       403:
+ *         description: Solo puedes modificar tu propia información
  */
-router.put('/:id/pago-movil', actualizarPagoMovil);
+router.put('/:id/pago-movil', authMiddleware, isUserOwner, actualizarPagoMovil);
 
 /**
  * @swagger
  * /api/users/{id}:
  *   delete:
- *     summary: Eliminar usuario
+ *     summary: Eliminar usuario (solo el propio usuario)
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -266,9 +304,13 @@ router.put('/:id/pago-movil', actualizarPagoMovil);
  *     responses:
  *       200:
  *         description: Usuario eliminado exitosamente
+ *       401:
+ *         description: Token requerido
+ *       403:
+ *         description: Solo puedes eliminar tu propia cuenta
  *       404:
  *         description: Usuario no encontrado
  */
-router.delete('/:id', eliminarUsuario);
+router.delete('/:id', authMiddleware, isUserOwner, eliminarUsuario);
 
 export default router;
