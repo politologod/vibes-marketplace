@@ -1,108 +1,109 @@
 # Vibes Marketplace Backend
 
-Backend para un marketplace desarrollado con Express.js, TypeScript y MongoDB.
+Backend para marketplace con Express.js, TypeScript y MongoDB.
 
-## 🚀 Tecnologías
+## Instalación
 
-- **Node.js** - Entorno de ejecución
-- **Express.js** - Framework web
-- **TypeScript** - Lenguaje tipado
-- **MongoDB** - Base de datos NoSQL
-- **Mongoose** - ODM para MongoDB
-- **dotenv** - Manejo de variables de entorno
-
-## 📦 Instalación
-
-1. Clona el repositorio:
 ```bash
 git clone <url-del-repo>
 cd vibes-marketplace-backend
-```
-
-2. Instala las dependencias:
-```bash
 npm install
 ```
 
-3. Configura las variables de entorno:
-```bash
-cp .env.example .env
-```
-Edita el archivo `.env` con tus configuraciones:
+Crear archivo `.env`:
 ```
 DATABASE_URL=mongodb://localhost:27017/vibes-marketplace
+JWT_SECRET=tu-clave-secreta
+JWT_EXPIRES=7d
 ```
 
-## 🛠️ Scripts Disponibles
+## Ejecutar
 
-- `npm run dev` - Ejecuta el servidor en modo desarrollo con recarga automática
-- `npm run build` - Compila TypeScript a JavaScript
-- `npm run start` - Ejecuta el servidor desde archivos compilados
-- `npm run build:watch` - Compila en modo observación
-
-## 🏃‍♂️ Ejecutar el Proyecto
-
-### Desarrollo
 ```bash
 npm run dev
 ```
-El servidor se ejecutará en `http://localhost:3000`
 
-### Producción
-```bash
-npm run build
-npm start
-```
+API en: http://localhost:3001
+Documentación: http://localhost:3001/api-docs
 
-## 📁 Estructura del Proyecto
+## Endpoints principales
+
+### Productos (formato test)
+- `GET /api/products/simple` - Lista de productos
+- `GET /api/products/simple/:id` - Producto por ID
+
+### Autenticación
+- `POST /api/auth/register` - Registrar usuario
+- `POST /api/auth/login` - Login
+- `GET /api/auth/verify` - Verificar token
+
+### Productos (completo)
+- `GET /api/products` - Lista con filtros avanzados
+- `POST /api/products` - Crear (requiere auth)
+- `PUT /api/products/:id` - Actualizar (requiere ser propietario)
+- `DELETE /api/products/:id` - Eliminar (requiere ser propietario)
+
+### Usuarios
+- `GET /api/users` - Lista (requiere auth)
+- `POST /api/users` - Crear (requiere auth)
+- `PUT /api/users/:id` - Actualizar (requiere ser el mismo usuario)
+
+## Mejoras implementadas
+
+Este backend va más allá del requerimiento básico:
+
+**Lo que pidieron:** API simple con JSON file
+**Lo que implementé:** 
+
+- MongoDB en lugar de archivo JSON
+- Sistema de autenticación completo con JWT
+- Protección de rutas y ownership
+- Documentación Swagger
+- Arquitectura MVC escalable
+- CORS configurado
+
+**¿Por qué?** Un marketplace real necesita estos features para producción. Los endpoints `/simple` mantienen compatibilidad con el test.
+
+## Estructura
 
 ```
 src/
-├── app.ts              # Punto de entrada de la aplicación
-├── configs/
-│   └── database.ts     # Configuración de la base de datos
-├── routes/             # Rutas de la API (próximamente)
-├── models/             # Modelos de Mongoose (próximamente)
-├── controllers/        # Controladores (próximamente)
-└── middleware/         # Middleware personalizado (próximamente)
+├── app.ts                 # Configuración principal
+├── routes/                # Rutas de la API
+├── controllers/           # Lógica de negocio  
+├── models/                # Esquemas MongoDB
+├── middleware/            # Auth y validaciones
+└── configs/               # DB y Swagger
 ```
 
-## 🔗 API Endpoints
+## Scripts
 
-### Base
-- `GET /` - Mensaje de bienvenida
+- `npm run dev` - Desarrollo
+- `npm run build` - Compilar
+- `npm run start` - Producción
 
-## 📋 Requisitos
+## Ejemplo de uso
 
-- Node.js >= 18
-- MongoDB >= 4.4
-- npm >= 8
+```bash
+# Registrar usuario
+curl -X POST http://localhost:3001/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"correo":"test@test.com","password":"123456","nombreCompleto":"Test User","cedula":"12345678"}'
 
-## 🔧 Configuración de MongoDB
-
-### Opción 1: MongoDB Local
-Instala MongoDB localmente y usa:
-```
-DATABASE_URL=mongodb://localhost:27017/vibes-marketplace
-```
-
-### Opción 2: MongoDB Atlas (Cloud)
-1. Crea una cuenta en [MongoDB Atlas](https://www.mongodb.com/atlas)
-2. Crea un cluster
-3. Obtén la cadena de conexión
-4. Úsala en tu archivo `.env`:
-```
-DATABASE_URL=mongodb+srv://usuario:password@cluster.mongodb.net/vibes-marketplace
+# Obtener productos (formato test)
+curl "http://localhost:3001/api/products/simple?sort=price&order=asc&limit=5"
 ```
 
-## 🤝 Contribuir
-
-1. Fork el proyecto
-2. Crea tu rama de características (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📝 Licencia
-
-Este proyecto está bajo la Licencia MIT.
+Respuesta:
+```json
+[
+  {
+    "id": "p1",
+    "name": "Guantes GN102", 
+    "price": 59.9,
+    "isAvailable": true,
+    "category": "gloves",
+    "image": "/img/gn102.jpg"
+  }
+]
+```

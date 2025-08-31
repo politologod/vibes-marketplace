@@ -232,3 +232,109 @@ export const obtenerCategorias = async (req: Request, res: Response) => {
     });
   }
 };
+
+// Endpoint de compatibilidad para el test rápido
+export const obtenerProductosSimple = async (req: Request, res: Response) => {
+  try {
+    const { 
+      search = '',
+      sort = 'price',
+      order = 'asc',
+      page = 1, 
+      limit = 10,
+      available
+    } = req.query;
+
+    const filtros: any = { estado: 'activo' };
+
+    // Filtro de disponibilidad
+    if (available !== undefined) {
+      if (available === 'true') {
+        filtros.stock = { $gt: 0 };
+      } else if (available === 'false') {
+        filtros.stock = { $lte: 0 };
+      }
+    }
+
+    // Búsqueda por texto
+    if (search && search.toString().trim() !== '') {
+      filtros.$or = [
+        { nombre: { $regex: search, $options: 'i' } },
+        { descripcion: { $regex: search, $options: 'i' } },
+        { categoria: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Configurar ordenamiento
+    const sortOptions: any = {};
+    if (sort === 'price') {
+      sortOptions.precio = order === 'desc' ? -1 : 1;
+    } else if (sort === 'name') {
+      sortOptions.nombre = order === 'desc' ? -1 : 1;
+    }
+
+    // Paginación
+    const pageNum = parseInt(page.toString()) || 1;
+    const limitNum = parseInt(limit.toString()) || 10;
+    const skip = (pageNum - 1) * limitNum;
+
+    const productos = await Product
+      .find(filtros)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limitNum);
+
+    // Transformar al formato simple requerido
+    const productosSimples = productos.map(producto => ({
+      id: producto._id.toString(),
+      name: producto.nombre,
+      price: producto.precio,
+      isAvailable: producto.stock > 0,
+      category: producto.categoria,
+      image: producto.imagenes && producto.imagenes.length > 0 ? producto.imagenes[0] : '/img/placeholder.jpg'
+    }));
+
+    res.json(productosSimples);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener productos',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
+  }
+};
+
+// Endpoint simple para obtener producto por ID
+export const obtenerProductoSimplePorId = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const producto = await Product.findById(id);
+
+    if (!producto) {
+      return res.status(404).json({
+        success: false,
+        message: 'Producto no encontrado'
+      });
+    }
+
+    // Transformar al formato simple
+    const productoSimple = {
+      id: producto._id.toString(),
+      name: producto.nombre,
+      price: producto.precio,
+      isAvailable: producto.stock > 0,
+      category: producto.categoria,
+      image: producto.imagenes && producto.imagenes.length > 0 ? producto.imagenes[0] : '/img/placeholder.jpg',
+      description: producto.descripcion,
+      stock: producto.stock
+    };
+
+    res.json(productoSimple);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener el producto',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
+  }
+};
