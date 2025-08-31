@@ -10,8 +10,11 @@ import {
   buscarProductos,
   obtenerCategorias,
   obtenerProductosSimple,
-  obtenerProductoSimplePorId
+  obtenerProductoSimplePorId,
+  subirImagenProducto,
+  subirMultiplesImagenes
 } from '../controllers/product.controllers.js';
+import { upload, uploadToCloudinary, uploadMultipleToCloudinary } from '../middleware/upload.middleware.js';
 
 const router = Router();
 
@@ -174,109 +177,6 @@ router.get('/categorias', obtenerCategorias);
 
 /**
  * @swagger
- * /api/products/{id}:
- *   get:
- *     summary: Obtener producto por ID (público)
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID del producto
- *     responses:
- *       200:
- *         description: Producto encontrado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 data:
- *                   $ref: '#/components/schemas/Product'
- *       404:
- *         description: Producto no encontrado
- */
-router.get('/:id', optionalAuth, obtenerProductoPorId);
-
-/**
- * @swagger
- * /api/products/{id}:
- *   put:
- *     summary: Actualizar producto (solo el dueño)
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID del producto
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Product'
- *     responses:
- *       200:
- *         description: Producto actualizado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Success'
- *       401:
- *         description: Token requerido
- *       403:
- *         description: Sin permisos para modificar este producto
- *       404:
- *         description: Producto no encontrado
- */
-router.put('/:id', authMiddleware, isProductOwner, actualizarProducto);
-
-/**
- * @swagger
- * /api/products/{id}:
- *   delete:
- *     summary: Eliminar producto (solo el dueño)
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID del producto
- *     responses:
- *       200:
- *         description: Producto eliminado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *       401:
- *         description: Token requerido
- *       403:
- *         description: Sin permisos para eliminar este producto
- *       404:
- *         description: Producto no encontrado
- */
-router.delete('/:id', authMiddleware, isProductOwner, eliminarProducto);
-
-/**
- * @swagger
  * /api/products/simple:
  *   get:
  *     summary: Obtener productos en formato simple (compatible con test rápido)
@@ -385,5 +285,236 @@ router.get('/simple', obtenerProductosSimple);
  *         description: Producto no encontrado
  */
 router.get('/simple/:id', obtenerProductoSimplePorId);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Obtener producto por ID (público)
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del producto
+ *     responses:
+ *       200:
+ *         description: Producto encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Producto no encontrado
+ */
+router.get('/:id', optionalAuth, obtenerProductoPorId);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   put:
+ *     summary: Actualizar producto (solo el dueño)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del producto
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Product'
+ *     responses:
+ *       200:
+ *         description: Producto actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Success'
+ *       401:
+ *         description: Token requerido
+ *       403:
+ *         description: Sin permisos para modificar este producto
+ *       404:
+ *         description: Producto no encontrado
+ */
+router.put('/:id', authMiddleware, isProductOwner, actualizarProducto);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   delete:
+ *     summary: Eliminar producto (solo el dueño)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del producto
+ *     responses:
+ *       200:
+ *         description: Producto eliminado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Token requerido
+ *       403:
+ *         description: Sin permisos para eliminar este producto
+ *       404:
+ *         description: Producto no encontrado
+ */
+router.delete('/:id', authMiddleware, isProductOwner, eliminarProducto);
+
+/**
+ * @swagger
+ * /api/products/{id}/upload-image:
+ *   post:
+ *     summary: Subir imagen a un producto
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del producto
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Archivo de imagen (máximo 5MB)
+ *     responses:
+ *       200:
+ *         description: Imagen subida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     imageUrl:
+ *                       type: string
+ *                     producto:
+ *                       $ref: '#/components/schemas/Product'
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: No se recibió imagen o formato inválido
+ *       401:
+ *         description: Token requerido
+ *       403:
+ *         description: Sin permisos para modificar este producto
+ *       404:
+ *         description: Producto no encontrado
+ */
+router.post('/:id/upload-image', 
+  authMiddleware, 
+  isProductOwner, 
+  upload.single('image'), 
+  uploadToCloudinary, 
+  subirImagenProducto
+);
+
+/**
+ * @swagger
+ * /api/products/{id}/upload-images:
+ *   post:
+ *     summary: Subir múltiples imágenes a un producto
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del producto
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Archivos de imágenes (máximo 5MB cada uno)
+ *     responses:
+ *       200:
+ *         description: Imágenes subidas exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     imageUrls:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     producto:
+ *                       $ref: '#/components/schemas/Product'
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: No se recibieron imágenes o formato inválido
+ *       401:
+ *         description: Token requerido
+ *       403:
+ *         description: Sin permisos para modificar este producto
+ *       404:
+ *         description: Producto no encontrado
+ */
+router.post('/:id/upload-images', 
+  authMiddleware, 
+  isProductOwner, 
+  upload.array('images', 5), 
+  uploadMultipleToCloudinary, 
+  subirMultiplesImagenes
+);
 
 export default router;

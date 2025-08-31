@@ -35,13 +35,6 @@ export const register = async (req: Request, res: Response) => {
       cedula,
       numeroTelefono,
       direccion,
-      cuentasBancarias: [],
-      pagoMovil: {
-        banco: '',
-        telefono: numeroTelefono,
-        cedula
-      },
-      correoBinanceUSDT: email,
       edad: 18
     });
 

@@ -33,6 +33,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
   customSiteTitle: 'Vibes Marketplace API Documentation'
 }));
 
+// Endpoint para descargar el archivo OpenAPI JSON
+app.get('/api-docs.json', (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(specs);
+});
+
 app.get('/', (req: Request, res: Response) => {
   res.json({
     message: '¡Bienvenido a Vibes Marketplace API!',
