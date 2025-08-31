@@ -1,6 +1,8 @@
-import { Response, NextFunction } from 'express';
-import { AuthRequest } from './auth.middleware.js';
+import { type Response } from 'express';
+import { type AuthRequest } from './auth.middleware.js';
 import Product from '../models/Product.models.js';
+
+type NextFunction = (err?: any) => void;
 
 export const isProductOwner = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

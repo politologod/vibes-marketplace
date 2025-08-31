@@ -1,12 +1,15 @@
-import { Request, Response, NextFunction } from 'express';
+import { type Request, type Response } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.models.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-export interface AuthRequest extends Request {
+// Definir NextFunction manualmente como alternativa
+type NextFunction = (err?: any) => void;
+
+export type AuthRequest = Request & {
   user?: any;
-}
+};
 
 export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

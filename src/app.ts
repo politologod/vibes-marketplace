@@ -3,6 +3,7 @@ import express, { type Express, type Request, type Response } from 'express';
 import connection from './configs/database.js';
 import productRoutes from './routes/product.routes.js';
 import userRoutes from './routes/user.routes.js';
+import authRoutes from './routes/auth.routes.js';
 import { swaggerUi, specs } from './configs/swagger.js';
 import cors from 'cors';
 
@@ -12,7 +13,14 @@ const app: Express = express();
 const port: number = 3000;
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173', 'http://localhost:4200'],
+  origin: ['http://localhost:3000{
+  "email": "maria.gonzalez@hotmail.com",
+  "password": "password456",
+  "nombreCompleto": "María Alejandra González",
+  "cedula": "V-87654321",
+  "numeroTelefono": "+58412-9876543",
+  "direccion": "Calle 15, Maracaibo, Zulia"
+}
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
