@@ -17,10 +17,17 @@ const options = {
       {
         url: 'http://localhost:3000',
         description: 'Servidor de desarrollo'
-      },
-
+      }
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Ingresa tu token JWT'
+        }
+      },
       schemas: {
         User: {
           type: 'object',
