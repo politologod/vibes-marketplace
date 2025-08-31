@@ -10,10 +10,10 @@ import cors from 'cors';
 
 
 const app: Express = express();
-const port: number = 3000;
+const port: number = 3001;
 
 app.use(cors({
-  origin: ['http://localhost:3000'],
+  origin: ['http://localhost:3001'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
@@ -36,10 +36,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
 app.get('/', (req: Request, res: Response) => {
   res.json({
     message: '¡Bienvenido a Vibes Marketplace API!',
-    documentation: 'http://localhost:3000/api-docs',
+    documentation: 'http://localhost:3001/api-docs',
     endpoints: {
-      users: 'http://localhost:3000/api/users',
-      products: 'http://localhost:3000/api/products'
+      users: 'http://localhost:3001/api/users',
+      products: 'http://localhost:3001/api/products'
     }
   });
 });

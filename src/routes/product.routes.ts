@@ -8,7 +8,9 @@ import {
   actualizarProducto,
   eliminarProducto,
   buscarProductos,
-  obtenerCategorias
+  obtenerCategorias,
+  obtenerProductosSimple,
+  obtenerProductoSimplePorId
 } from '../controllers/product.controllers.js';
 
 const router = Router();
@@ -272,5 +274,116 @@ router.put('/:id', authMiddleware, isProductOwner, actualizarProducto);
  *         description: Producto no encontrado
  */
 router.delete('/:id', authMiddleware, isProductOwner, eliminarProducto);
+
+/**
+ * @swagger
+ * /api/products/simple:
+ *   get:
+ *     summary: Obtener productos en formato simple (compatible con test rápido)
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Buscar productos por nombre, descripción o categoría
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           enum: [price, name]
+ *           default: price
+ *         description: Campo para ordenar
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *         description: Dirección del ordenamiento
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Productos por página
+ *       - in: query
+ *         name: available
+ *         schema:
+ *           type: string
+ *           enum: [true, false]
+ *         description: Filtrar por disponibilidad
+ *     responses:
+ *       200:
+ *         description: Lista de productos en formato simple
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   price:
+ *                     type: number
+ *                   isAvailable:
+ *                     type: boolean
+ *                   category:
+ *                     type: string
+ *                   image:
+ *                     type: string
+ */
+router.get('/simple', obtenerProductosSimple);
+
+/**
+ * @swagger
+ * /api/products/simple/{id}:
+ *   get:
+ *     summary: Obtener producto por ID en formato simple
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del producto
+ *     responses:
+ *       200:
+ *         description: Producto en formato simple
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 price:
+ *                   type: number
+ *                 isAvailable:
+ *                   type: boolean
+ *                 category:
+ *                   type: string
+ *                 image:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 stock:
+ *                   type: number
+ *       404:
+ *         description: Producto no encontrado
+ */
+router.get('/simple/:id', obtenerProductoSimplePorId);
 
 export default router;
