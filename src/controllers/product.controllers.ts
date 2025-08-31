@@ -338,3 +338,91 @@ export const obtenerProductoSimplePorId = async (req: Request, res: Response) =>
     });
   }
 };
+
+export const subirImagenProducto = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const cloudinaryUrl = (req as any).cloudinaryUrl;
+
+    if (!cloudinaryUrl) {
+      return res.status(400).json({
+        success: false,
+        message: 'No se recibió ninguna imagen'
+      });
+    }
+
+    const producto = await Product.findById(id);
+    if (!producto) {
+      return res.status(404).json({
+        success: false,
+        message: 'Producto no encontrado'
+      });
+    }
+
+    if (!producto.imagenes) {
+      producto.imagenes = [];
+    }
+    producto.imagenes.push(cloudinaryUrl);
+
+    await producto.save();
+
+    res.json({
+      success: true,
+      data: {
+        imageUrl: cloudinaryUrl,
+        producto: producto
+      },
+      message: 'Imagen subida exitosamente'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al subir imagen',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
+  }
+};
+
+export const subirMultiplesImagenes = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const cloudinaryUrls = (req as any).cloudinaryUrls;
+
+    if (!cloudinaryUrls || cloudinaryUrls.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No se recibieron imágenes'
+      });
+    }
+
+    const producto = await Product.findById(id);
+    if (!producto) {
+      return res.status(404).json({
+        success: false,
+        message: 'Producto no encontrado'
+      });
+    }
+
+    if (!producto.imagenes) {
+      producto.imagenes = [];
+    }
+    producto.imagenes.push(...cloudinaryUrls);
+
+    await producto.save();
+
+    res.json({
+      success: true,
+      data: {
+        imageUrls: cloudinaryUrls,
+        producto: producto
+      },
+      message: `${cloudinaryUrls.length} imágenes subidas exitosamente`
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al subir imágenes',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
+  }
+};
