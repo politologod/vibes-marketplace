@@ -170,7 +170,7 @@ export const eliminarProducto = async (req: Request, res: Response) => {
       success: true,
       message: 'Producto eliminado exitosamente'
     });
-  } catch (error)c
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Error al eliminar el producto',
