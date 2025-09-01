@@ -8,6 +8,7 @@ export interface IAuth extends Document {
   lastLogin: Date;
   createdAt: Date;
   updatedAt: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 export interface LoginRequest {

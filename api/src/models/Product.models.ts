@@ -137,7 +137,7 @@ ProductSchema.pre('save', function(next) {
   next();
 });
 
-ProductSchema.virtual('precioConDescuento').get(function() {
+ProductSchema.virtual('precioConDescuento').get(function(this: IProduct) {
   if (this.descuento && 
       this.descuento.fechaInicio <= new Date() && 
       this.descuento.fechaFin >= new Date()) {

@@ -292,10 +292,10 @@ export const obtenerProductosSimple = async (req: Request, res: Response) => {
       .filter(producto => {
         return producto.imagenes && 
                producto.imagenes.length > 0 && 
-               producto.imagenes[0].includes('cloudinary.com');
+               producto.imagenes[0]?.includes('cloudinary.com');
       })
       .map(producto => ({
-        id: producto._id.toString(),
+        id: producto._id?.toString(),
         name: producto.nombre,
         price: producto.precio,
         isAvailable: producto.stock > 0,
@@ -327,7 +327,7 @@ export const obtenerProductoSimplePorId = async (req: Request, res: Response) =>
 
     if (!producto.imagenes || 
         producto.imagenes.length === 0 || 
-        !producto.imagenes[0].includes('cloudinary.com')) {
+        !producto.imagenes[0]?.includes('cloudinary.com')) {
       return res.status(404).json({
         success: false,
         message: 'Producto sin imágenes válidas disponibles'
@@ -335,7 +335,7 @@ export const obtenerProductoSimplePorId = async (req: Request, res: Response) =>
     }
 
     const productoSimple = {
-      id: producto._id.toString(),
+      id: producto._id?.toString(),
       name: producto.nombre,
       price: producto.precio,
       isAvailable: producto.stock > 0,
