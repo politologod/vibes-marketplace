@@ -1,8 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Navigation } from "@/components/organisms/navigation"
-import { Footer } from "@/components/organisms/footer"
 import { ProductForm } from "@/components/organisms/product-form"
 import { ProductListing } from "@/components/organisms/product-listing"
 import { Tabs } from "@/components/organisms/tabs"
@@ -112,27 +110,23 @@ export default function SellPage() {
   ]
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navigation />
-      <main className="flex-1 container py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gradient mb-2">
-              Vender Productos
-            </h1>
-            <p className="text-muted-foreground">
-              Publica tus productos y llega a miles de compradores
-            </p>
-          </div>
-
-          <Tabs
-            tabs={tabs}
-            defaultTab="new"
-            variant="default"
-          />
+    <div className="container py-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gradient mb-2">
+            Vender Productos
+          </h1>
+          <p className="text-muted-foreground">
+            Publica tus productos y llega a miles de compradores
+          </p>
         </div>
-      </main>
-      <Footer />
+
+        <Tabs
+          tabs={tabs}
+          defaultTab="new"
+          variant="default"
+        />
+      </div>
     </div>
   )
 }

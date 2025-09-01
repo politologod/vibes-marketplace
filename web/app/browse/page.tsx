@@ -1,8 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Navigation } from "@/components/organisms/navigation"
-import { Footer } from "@/components/organisms/footer"
 import { FilterSidebar } from "@/components/organisms/filter-sidebar"
 import { ProductGrid } from "@/components/molecules/product-grid"
 
@@ -106,41 +104,35 @@ export default function BrowsePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navigation />
-      
-      <main className="flex-1 container py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <aside className="lg:w-80 flex-shrink-0">
-            <FilterSidebar
-              priceRange={priceRange}
-              onPriceRangeChange={setPriceRange}
-              category={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              location={selectedLocation}
-              onLocationChange={setSelectedLocation}
-              searchQuery={searchQuery}
-              onSearchQueryChange={setSearchQuery}
-              onClearFilters={handleClearFilters}
-            />
-          </aside>
+    <div className="container py-8">
+      <div className="flex flex-col lg:flex-row gap-8">
+        <aside className="lg:w-80 flex-shrink-0">
+          <FilterSidebar
+            priceRange={priceRange}
+            onPriceRangeChange={setPriceRange}
+            category={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            location={selectedLocation}
+            onLocationChange={setSelectedLocation}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+            onClearFilters={handleClearFilters}
+          />
+        </aside>
 
-          <div className="flex-1">
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gradient mb-2">
-                Explorar Productos
-              </h1>
-              <p className="text-muted-foreground">
-                Encontramos {filteredProducts.length} productos que coinciden con tu búsqueda
-              </p>
-            </div>
-
-            <ProductGrid products={filteredProducts} />
+        <div className="flex-1">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gradient mb-2">
+              Explorar Productos
+            </h1>
+            <p className="text-muted-foreground">
+              Encontramos {filteredProducts.length} productos que coinciden con tu búsqueda
+            </p>
           </div>
-        </div>
-      </main>
 
-      <Footer />
+          <ProductGrid products={filteredProducts} />
+        </div>
+      </div>
     </div>
   )
 }

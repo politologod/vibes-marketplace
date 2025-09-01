@@ -1,8 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Navigation } from "@/components/organisms/navigation"
-import { Footer } from "@/components/organisms/footer"
 import { ProfileHeader } from "@/components/organisms/profile-header"
 import { ProfileSettings } from "@/components/organisms/profile-settings"
 import { ProfileActivity } from "@/components/organisms/profile-activity"
@@ -135,9 +133,8 @@ export default function ProfilePage() {
   ]
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-primary/5">
-      <Navigation />
-      <main className="flex-1 container py-8">
+    <div className="bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="container py-8">
         <div className="max-w-7xl mx-auto">
           <ProfileHeader
             {...mockUserData}
@@ -145,8 +142,7 @@ export default function ProfilePage() {
           />
           <Tabs tabs={tabs} defaultTab="overview" variant="default" />
         </div>
-      </main>
-      <Footer />
+      </div>
     </div>
   )
 }
