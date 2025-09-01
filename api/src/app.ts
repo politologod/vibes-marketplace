@@ -11,7 +11,7 @@ import cors from 'cors';
 
 const app: Express = express();
 const port: number = 3001;
-
+const host: string = '0.0.0.0'
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3001', 'https://vibes-marketplace.vercel.app'],
   credentials: true,
@@ -55,6 +55,6 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Inicia el servidor
-app.listen(port, () => {
-  console.log(` Servidor corriendo en http://localhost:${port}`);
+app.listen(port, host, () => {
+  console.log(` Servidor corriendo en http://${host}:${port}`);
 });
