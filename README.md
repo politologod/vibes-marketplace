@@ -1,11 +1,50 @@
-Aquí está el backend en linea: https://vibes-backend.ddns.net/api-docs/
-Aquí está el frontend en linea: https://vibes-marketplace.vercel.app/
-Primero que todo, gracias por el tiempo
-Me apegué en lo posible a las reglas y criterios de la prueba. Primero hice el backend, y luego el frontend, hice refactorizaciones y arreglos, y también hice despliegue en vercel y en AWS para que pueda ver la prueba en linea
-Tengo varios hallazgos, me hacen falta varios fixes. Los features criticos, los pedidos en la prueba, están presentes. Con respecto a la documentación, coloqué swagger en el backend, me conecto a mongodb atlas, tengo modelos para productos y usuarios, prescindí de data/products.json dado que no es lo más correcto para una versión real de una aplicación, así que coloqué endpoints para crear productos, editar productos, eliminarlos y listarlos, usando mongodb
-Además, agregué protección de rutas en el backend y coloqué un inicio de sesión y registro en la aplicación. Tambien estoy usando cloudinary, la cual es un servicio en la nube para almacenar y servir archivos multimedia, con cloudinary estoy guardando las imagenes de los productos. Me acabo de dar cuenta que cloudinary restringió sus servicios para Venezuela así que para que carguen las imagenes, hay que usar una VPN
-En el frontend, usé el patrón de diseño atomic design. Atomic design es un patrón de diseño avanzado que permite la optimización y reutilización máxima de los componentes en react, lo aprendí recientemente y lo apliqué aquí. Primero maqueté con v0 el marketplace, y luego, basado en ese diseño, empecé a construir la aplicación, usando patrones de diseño clasicos, creando mi tipado, mis servicios, y demás
-Debo admitir que me apoyé un par de ocasiones en IA, para crear la documentación del proyecto, y para depurar errores que iban surgiendo en el desarrollo. A nivel personal, considero que si tienes la experiencia y el criterio, sabes lo que haces como desarrollador, puedes aprovechar al máximo las herramientas
-Decidí implementar eso y varios features adicionales porque, honestamente, en experiencias pasadas, el hacer lo justo y necesario, apegandome a las instrucciones, no me hizo destacar en el proceso de selección. Consideré agregar todas esas cosas e incluso hacer despliegue en AWS para demostrar mi experiencia y el valor que puedo aportar al equipo de desarrollo
-Me hacen falta algunos arreglos de parte del frontend como la actualizacion de productos, de la foto de perfil de usuarios, integrar en las barras de busqueda los endpoints get para filtrar adecuadamente y demás, pero del lado del backend hay muchas cosas funcionales.
-Espero que estos comentarios sean utiles, demuestren mi honestidad, compromiso, y el valor que puedo entregar al equipo. 
+Vibes Marketplace
+Este documento presenta una visión general del proyecto Vibes Marketplace, incluyendo su estado actual, las tecnologías utilizadas y los próximos pasos.
+
+🔗 Demostraciones en Vivo
+Puedes explorar la aplicación en línea a través de los siguientes enlaces:
+
+Backend (API): https://vibes-backend.ddns.net/api-docs/
+
+La documentación de la API está disponible a través de Swagger.
+
+Frontend: https://vibes-marketplace.vercel.app/
+
+Nota: Para que las imágenes carguen correctamente, es necesario usar una VPN, ya que Cloudinary ha restringido sus servicios en Venezuela.
+
+💡 Hallazgos y Características Implementadas
+En este proyecto, me he apegado a los criterios de la prueba, pero también he implementado funcionalidades adicionales para demostrar mi experiencia y compromiso.
+
+Backend
+Se utiliza MongoDB Atlas para la persistencia de datos, prescindiendo de archivos estáticos como products.json.
+
+Los modelos de datos para productos y usuarios están bien definidos.
+
+Se han creado endpoints para la gestión completa de productos (CRUD): crear, editar, eliminar y listar.
+
+Se han implementado rutas protegidas y sistemas de inicio de sesión y registro de usuarios.
+
+Cloudinary se utiliza para el almacenamiento y la entrega de imágenes de productos.
+
+Frontend
+El proyecto fue maquetado inicialmente con v0 y luego construido con React.
+
+Se aplicó el patrón de diseño Atomic Design para optimizar y reutilizar los componentes.
+
+El código sigue patrones de diseño clásicos e incluye tipado y servicios bien estructurados.
+
+Sobre el Proceso de Desarrollo
+Me apoyé en herramientas de IA para la documentación del proyecto y la depuración de errores, lo cual considero una práctica válida y productiva cuando se tiene el criterio adecuado.
+
+La decisión de incluir características adicionales y realizar el despliegue en Vercel y AWS se tomó para demostrar mi experiencia, el valor que puedo aportar al equipo y mi compromiso con el proyecto.
+
+🛠️ Próximos Pasos y Mejoras Pendientes
+Aunque los features críticos están implementados, hay algunas mejoras y correcciones pendientes en el frontend:
+
+Funcionalidad de actualización de productos.
+
+Actualización de la foto de perfil de usuarios.
+
+Integración de los endpoints get en la barra de búsqueda para un filtrado adecuado.
+
+Espero que estos comentarios sean útiles y que demuestren mi honestidad, compromiso y el valor que puedo entregar al equipo.
