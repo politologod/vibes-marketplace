@@ -6,7 +6,8 @@ export const crearProducto = async (req: AuthRequest, res: Response) => {
   try {
     const productoData = {
       ...req.body,
-      vendedorId: req.user._id
+      vendedorId: req.user._id,
+      imagenes: []
     };
     
     const producto = new Product(productoData);

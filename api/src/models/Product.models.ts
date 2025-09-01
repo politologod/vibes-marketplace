@@ -30,7 +30,6 @@ const ProductSchema: Schema = new Schema({
   },
   imagenes: [{
     type: String,
-    required: true,
     trim: true
   }],
   stock: {
