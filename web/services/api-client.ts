@@ -10,6 +10,7 @@ export class ApiClient {
 
   constructor(baseURL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001') {
     this.baseURL = baseURL
+    console.log('🌐 API URL configurada:', this.baseURL)
   }
 
   private async request<T>(
