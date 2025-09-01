@@ -280,20 +280,28 @@ export const obtenerProductosSimple = async (req: Request, res: Response) => {
     const limitNum = parseInt(limit.toString()) || 10;
     const skip = (pageNum - 1) * limitNum;
 
+    filtros.imagenes = { $exists: true, $ne: [], $not: { $size: 0 } };
+
     const productos = await Product
       .find(filtros)
       .sort(sortOptions)
       .skip(skip)
       .limit(limitNum);
 
-    const productosSimples = productos.map(producto => ({
-      id: producto._id.toString(),
-      name: producto.nombre,
-      price: producto.precio,
-      isAvailable: producto.stock > 0,
-      category: producto.categoria,
-      image: producto.imagenes && producto.imagenes.length > 0 ? producto.imagenes[0] : '/img/placeholder.jpg'
-    }));
+    const productosSimples = productos
+      .filter(producto => {
+        return producto.imagenes && 
+               producto.imagenes.length > 0 && 
+               producto.imagenes[0].includes('cloudinary.com');
+      })
+      .map(producto => ({
+        id: producto._id.toString(),
+        name: producto.nombre,
+        price: producto.precio,
+        isAvailable: producto.stock > 0,
+        category: producto.categoria,
+        image: producto.imagenes[0] 
+      }));
 
     res.json(productosSimples);
   } catch (error) {
@@ -317,13 +325,22 @@ export const obtenerProductoSimplePorId = async (req: Request, res: Response) =>
       });
     }
 
+    if (!producto.imagenes || 
+        producto.imagenes.length === 0 || 
+        !producto.imagenes[0].includes('cloudinary.com')) {
+      return res.status(404).json({
+        success: false,
+        message: 'Producto sin imágenes válidas disponibles'
+      });
+    }
+
     const productoSimple = {
       id: producto._id.toString(),
       name: producto.nombre,
       price: producto.precio,
       isAvailable: producto.stock > 0,
       category: producto.categoria,
-      image: producto.imagenes && producto.imagenes.length > 0 ? producto.imagenes[0] : '/img/placeholder.jpg',
+      image: producto.imagenes[0],
       description: producto.descripcion,
       stock: producto.stock
     };
