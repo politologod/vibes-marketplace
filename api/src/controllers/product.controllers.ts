@@ -1,9 +1,16 @@
 import { type Request, type Response } from 'express';
 import Product from '../models/Product.models.js';
+import { type AuthRequest } from '../middleware/auth.middleware.js';
 
-export const crearProducto = async (req: Request, res: Response) => {
+export const crearProducto = async (req: AuthRequest, res: Response) => {
   try {
-    const producto = new Product(req.body);
+    const productoData = {
+      ...req.body,
+      vendedorId: req.user._id,
+      imagenes: []
+    };
+    
+    const producto = new Product(productoData);
     await producto.save();
     res.status(201).json({
       success: true,
@@ -124,7 +131,7 @@ export const obtenerProductoPorId = async (req: Request, res: Response) => {
   }
 };
 
-export const actualizarProducto = async (req: Request, res: Response) => {
+export const actualizarProducto = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const producto = await Product.findByIdAndUpdate(
@@ -154,7 +161,7 @@ export const actualizarProducto = async (req: Request, res: Response) => {
   }
 };
 
-export const eliminarProducto = async (req: Request, res: Response) => {
+export const eliminarProducto = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const producto = await Product.findByIdAndDelete(id);
@@ -233,7 +240,6 @@ export const obtenerCategorias = async (req: Request, res: Response) => {
   }
 };
 
-// Endpoint de compatibilidad para el test rápido
 export const obtenerProductosSimple = async (req: Request, res: Response) => {
   try {
     const { 
@@ -247,7 +253,6 @@ export const obtenerProductosSimple = async (req: Request, res: Response) => {
 
     const filtros: any = { estado: 'activo' };
 
-    // Filtro de disponibilidad
     if (available !== undefined) {
       if (available === 'true') {
         filtros.stock = { $gt: 0 };
@@ -256,7 +261,6 @@ export const obtenerProductosSimple = async (req: Request, res: Response) => {
       }
     }
 
-    // Búsqueda por texto
     if (search && search.toString().trim() !== '') {
       filtros.$or = [
         { nombre: { $regex: search, $options: 'i' } },
@@ -265,7 +269,6 @@ export const obtenerProductosSimple = async (req: Request, res: Response) => {
       ];
     }
 
-    // Configurar ordenamiento
     const sortOptions: any = {};
     if (sort === 'price') {
       sortOptions.precio = order === 'desc' ? -1 : 1;
@@ -273,7 +276,6 @@ export const obtenerProductosSimple = async (req: Request, res: Response) => {
       sortOptions.nombre = order === 'desc' ? -1 : 1;
     }
 
-    // Paginación
     const pageNum = parseInt(page.toString()) || 1;
     const limitNum = parseInt(limit.toString()) || 10;
     const skip = (pageNum - 1) * limitNum;
@@ -284,7 +286,6 @@ export const obtenerProductosSimple = async (req: Request, res: Response) => {
       .skip(skip)
       .limit(limitNum);
 
-    // Transformar al formato simple requerido
     const productosSimples = productos.map(producto => ({
       id: producto._id.toString(),
       name: producto.nombre,
@@ -304,7 +305,6 @@ export const obtenerProductosSimple = async (req: Request, res: Response) => {
   }
 };
 
-// Endpoint simple para obtener producto por ID
 export const obtenerProductoSimplePorId = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -317,7 +317,6 @@ export const obtenerProductoSimplePorId = async (req: Request, res: Response) =>
       });
     }
 
-    // Transformar al formato simple
     const productoSimple = {
       id: producto._id.toString(),
       name: producto.nombre,
@@ -339,7 +338,7 @@ export const obtenerProductoSimplePorId = async (req: Request, res: Response) =>
   }
 };
 
-export const subirImagenProducto = async (req: Request, res: Response) => {
+export const subirImagenProducto = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const cloudinaryUrl = (req as any).cloudinaryUrl;
@@ -383,7 +382,7 @@ export const subirImagenProducto = async (req: Request, res: Response) => {
   }
 };
 
-export const subirMultiplesImagenes = async (req: Request, res: Response) => {
+export const subirMultiplesImagenes = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const cloudinaryUrls = (req as any).cloudinaryUrls;

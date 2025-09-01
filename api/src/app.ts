@@ -19,15 +19,19 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
 }));
 
-// Middleware para parsear JSON (opcional pero común)
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// Ruta de ejemplo
 connection();
 
-app.use('/api/products', productRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/auth', authRoutes);
+const jsonMiddleware = express.json();
+
+app.use('/api/auth', jsonMiddleware, authRoutes);
+app.use('/api/users', jsonMiddleware, userRoutes);
+
+app.use('/api/products', (req, res, next) => {
+  if (req.path.includes('/upload-image')) {
+    return next();
+  }
+  jsonMiddleware(req, res, next);
+}, productRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'Vibes Marketplace API Documentation'

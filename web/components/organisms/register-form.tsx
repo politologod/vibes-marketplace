@@ -8,13 +8,15 @@ import { Label } from "@/components/atoms/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/molecules/card"
 import { InputField } from "@/components/molecules/input-field"
 import { PasswordField } from "@/components/molecules/password-field"
-import { Mail, User, Phone } from "lucide-react"
+import { Mail, User, Phone, CreditCard, MapPin } from "lucide-react"
 
 interface RegisterFormData {
   firstName: string
   lastName: string
   email: string
   phone: string
+  cedula: string
+  direccion: string
   password: string
   confirmPassword: string
   agreeToTerms: boolean
@@ -31,6 +33,8 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
     lastName: "",
     email: "",
     phone: "",
+    cedula: "",
+    direccion: "",
     password: "",
     confirmPassword: "",
     agreeToTerms: false,
@@ -41,7 +45,6 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Validación básica
     const newErrors: Partial<RegisterFormData> = {}
     
     if (formData.password !== formData.confirmPassword) {
@@ -49,7 +52,7 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
     }
     
     if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = true as any // Error flag
+      newErrors.agreeToTerms = true as any
     }
 
     setErrors(newErrors)
@@ -61,7 +64,6 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
 
   const handleInputChange = (field: keyof RegisterFormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
-    // Limpiar error del campo cuando el usuario lo modifica
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }))
     }
@@ -79,7 +81,6 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name Fields */}
           <div className="grid grid-cols-2 gap-4">
             <InputField
               id="firstName"
@@ -122,10 +123,34 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
             label="Teléfono"
             type="tel"
             icon={Phone}
-            placeholder="+1 234 567 8900"
+            placeholder="+58 414 123 4567"
             value={formData.phone}
             onChange={(e) => handleInputChange("phone", e.target.value)}
             error={errors.phone}
+            required
+          />
+
+          <InputField
+            id="cedula"
+            label="Cédula de Identidad"
+            type="text"
+            icon={CreditCard}
+            placeholder="12345678"
+            value={formData.cedula}
+            onChange={(e) => handleInputChange("cedula", e.target.value)}
+            error={errors.cedula}
+            required
+          />
+
+          <InputField
+            id="direccion"
+            label="Dirección"
+            type="text"
+            icon={MapPin}
+            placeholder="Caracas, Venezuela"
+            value={formData.direccion}
+            onChange={(e) => handleInputChange("direccion", e.target.value)}
+            error={errors.direccion}
             required
           />
 
@@ -149,7 +174,6 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
             required
           />
 
-          {/* Terms Agreement */}
           <div className="flex items-start space-x-2">
             <Checkbox
               id="terms"
@@ -170,7 +194,6 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
             <p className="text-sm text-destructive">Debes aceptar los términos y condiciones</p>
           )}
 
-          {/* Submit Button */}
           <Button
             type="submit"
             className="w-full bg-gradient-to-r from-secondary to-secondary/80 hover:opacity-90 transition-all duration-300 neon-glow"
@@ -181,7 +204,6 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
           </Button>
         </form>
 
-        {/* Login Link */}
         <div className="mt-6 text-center">
           <p className="text-sm text-muted-foreground">
             ¿Ya tienes una cuenta?{" "}

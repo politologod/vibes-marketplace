@@ -11,10 +11,11 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/organisms/dropdown-menu"
-import { Menu, ShoppingCart, LogIn, UserPlus, User, Plus, Minus, Trash2, CreditCard, ShoppingBag } from "lucide-react"
+import { Menu, ShoppingCart, LogIn, UserPlus, User, Plus, Minus, Trash2, CreditCard, ShoppingBag, LogOut } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import Image from "next/image"
+import { useAuth } from "@/context"
 
 interface CartItem {
   id: string
@@ -25,6 +26,7 @@ interface CartItem {
 }
 
 export function Navigation() {
+  const { user, isAuthenticated, logout } = useAuth()
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
       id: "1",
@@ -41,7 +43,6 @@ export function Navigation() {
       image: "/athletic-shoes.png",
     },
   ])
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
   
@@ -289,6 +290,13 @@ export function Navigation() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="cursor-pointer hover:bg-red-100 text-red-600"
+                    onClick={logout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {navData.auth.logout}
+                  </DropdownMenuItem>
                 </>
               )}
 
