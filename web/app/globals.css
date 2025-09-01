@@ -4,7 +4,6 @@
 
 @layer base {
   :root {
-    /* Updated to futuristic design tokens with purple primary and coral accent */
     --background: 0 0% 100%;
     --foreground: 240 10% 12%;
 
@@ -13,19 +12,15 @@
 
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 12%;
-
-    /* Futuristic vibrant purple primary */
     --primary: 252 83% 57%;
     --primary-foreground: 0 0% 100%;
 
-    /* Coral accent for highlights */
     --secondary: 9 100% 69%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 97%;
     --muted-foreground: 240 4% 46%;
 
-    /* Coral accent color */
     --accent: 9 100% 69%;
     --accent-foreground: 0 0% 100%;
 
@@ -38,7 +33,6 @@
 
     --radius: 0.75rem;
 
-    /* Added futuristic design tokens */
     --chart-1: 252 83% 57%;
     --chart-2: 9 100% 69%;
     --chart-3: 240 10% 12%;
@@ -54,13 +48,11 @@
     --sidebar-border: 240 6% 90%;
     --sidebar-ring: 252 83% 57%;
 
-    /* Custom futuristic gradients */
     --gradient-primary: linear-gradient(135deg, hsl(252 83% 57%) 0%, hsl(9 100% 69%) 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(240 10% 12%) 0%, hsl(252 83% 57%) 100%);
   }
 
   .dark {
-    /* Updated dark mode for futuristic feel */
     --background: 240 10% 4%;
     --foreground: 0 0% 98%;
 
@@ -109,7 +101,6 @@
   }
 }
 
-/* Added futuristic utility classes */
 @layer utilities {
   .gradient-primary {
     background: var(--gradient-primary);
@@ -134,5 +125,20 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }
