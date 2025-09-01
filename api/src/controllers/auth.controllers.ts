@@ -1,5 +1,5 @@
 import { type Request, type Response } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { type SignOptions } from 'jsonwebtoken';
 import Auth from '../models/Auth.models.js';
 import User from '../models/User.models.js';
 import { type RegisterRequest, type LoginRequest } from '../types/Auth.js';
@@ -48,15 +48,13 @@ export const register = async (req: Request, res: Response) => {
 
     await newAuth.save();
 
-    const token = jwt.sign(
-      { 
-        userId: savedUser._id,
-        email: savedUser.correo,
-        authId: newAuth._id
-      },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRES }
-    );
+    const payload = {
+      userId: savedUser._id,
+      email: savedUser.correo,
+      authId: newAuth._id
+    };
+    const options = { expiresIn: JWT_EXPIRES } as any;
+    const token = jwt.sign(payload, JWT_SECRET as string, options);
 
     res.status(201).json({
       success: true,
@@ -110,15 +108,13 @@ export const login = async (req: Request, res: Response) => {
 
     const user = auth.userId as any;
 
-    const token = jwt.sign(
-      { 
-        userId: user._id,
-        email: user.correo,
-        authId: auth._id
-      },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRES }
-    );
+    const payload = {
+      userId: user._id,
+      email: user.correo,
+      authId: auth._id
+    };
+    const options = { expiresIn: JWT_EXPIRES } as any;
+    const token = jwt.sign(payload, JWT_SECRET as string, options);
 
     res.json({
       success: true,
