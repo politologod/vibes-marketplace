@@ -6,30 +6,9 @@ import { ProfileSettings } from "@/components/organisms/profile-settings"
 import { ProfileActivity } from "@/components/organisms/profile-activity"
 import { ProductListing } from "@/components/organisms/product-listing"
 import { Tabs } from "@/components/organisms/tabs"
+import { useUserProfile } from "@/hooks/useUserProfile"
+import { Card, CardContent } from "@/components/molecules/card"
 
-const mockUserData = {
-  name: "Juan Pérez",
-  joinDate: "Diciembre 2023",
-  rating: 4.9,
-  reviewCount: 127,
-  verified: true,
-  avatarUrl: "/api/placeholder/150/150",
-  stats: {
-    totalSales: 47,
-    totalRevenue: "$12,450",
-    activeProducts: 23,
-    totalViews: "8.7k"
-  }
-}
-
-const mockProfileData = {
-  firstName: "Juan",
-  lastName: "Pérez", 
-  email: "juan.perez@email.com",
-  phone: "+58 412 123 4567",
-  location: "Caracas, Venezuela",
-  bio: "Vendedor apasionado de productos de tecnología y moda."
-}
 
 const mockTransactions = [
   {
@@ -83,16 +62,83 @@ const mockProducts = [
 ]
 
 export default function ProfilePage() {
-  const [isLoading, setIsLoading] = useState(false)
+  const { user, loading, error, updateProfile } = useUserProfile()
+  const [isUpdating, setIsUpdating] = useState(false)
 
   const handleProfileSave = async (data: any) => {
-    setIsLoading(true)
+    setIsUpdating(true)
     try {
-      console.log("Saving profile:", data)
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await updateProfile(data)
+    } catch (err) {
+      console.error("Error updating profile:", err)
     } finally {
-      setIsLoading(false)
+      setIsUpdating(false)
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="bg-gradient-to-br from-background via-background to-primary/5">
+        <div className="container py-8">
+          <div className="max-w-7xl mx-auto">
+            <Card>
+              <CardContent className="p-8 text-center">
+                <div className="animate-pulse">
+                  <div className="h-8 bg-muted rounded w-64 mx-auto mb-4"></div>
+                  <div className="h-4 bg-muted rounded w-48 mx-auto"></div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !user) {
+    return (
+      <div className="bg-gradient-to-br from-background via-background to-primary/5">
+        <div className="container py-8">
+          <div className="max-w-7xl mx-auto">
+            <Card>
+              <CardContent className="p-8 text-center">
+                <p className="text-red-500 text-lg">{error || 'No se pudo cargar el perfil'}</p>
+                <p className="text-muted-foreground mt-2">
+                  Por favor, inicia sesión para ver tu perfil.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const userHeaderData = {
+    name: user.nombreCompleto,
+    joinDate: new Date(user.fechaCreacion).toLocaleDateString('es-ES', { 
+      month: 'long', 
+      year: 'numeric' 
+    }),
+    rating: 4.5, 
+    reviewCount: 0, 
+    verified: true,
+    avatarUrl: user.foto || "/api/placeholder/150/150",
+    stats: {
+      totalSales: 0, 
+      totalRevenue: "$0", 
+      activeProducts: 0, 
+      totalViews: "0" 
+    }
+  }
+
+  const profileData = {
+    firstName: user.nombreCompleto.split(' ')[0] || '',
+    lastName: user.nombreCompleto.split(' ').slice(1).join(' ') || '',
+    email: user.correo,
+    phone: user.numeroTelefono || '',
+    location: user.direccion || '',
+    bio: '' 
   }
 
   const tabs = [
@@ -124,9 +170,9 @@ export default function ProfilePage() {
       label: "Configuración", 
       content: (
         <ProfileSettings
-          initialData={mockProfileData}
+          initialData={profileData}
           onSave={handleProfileSave}
-          isLoading={isLoading}
+          isLoading={isUpdating}
         />
       )
     }
@@ -137,7 +183,7 @@ export default function ProfilePage() {
       <div className="container py-8">
         <div className="max-w-7xl mx-auto">
           <ProfileHeader
-            {...mockUserData}
+            {...userHeaderData}
             onAvatarChange={() => console.log("Change avatar")}
           />
           <Tabs tabs={tabs} defaultTab="overview" variant="default" />
