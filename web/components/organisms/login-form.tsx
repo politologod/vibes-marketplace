@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/atoms/button"
 import { Checkbox } from "@/components/atoms/checkbox"
 import { Label } from "@/components/atoms/label"
@@ -9,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { InputField } from "@/components/molecules/input-field"
 import { PasswordField } from "@/components/molecules/password-field"
 import { Mail } from "lucide-react"
+import { authService } from "@/services"
 
 interface LoginFormData {
   email: string
