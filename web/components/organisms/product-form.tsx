@@ -64,9 +64,7 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
     loadCategories()
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
+  const handleSubmit = () => {
     const productData: CreateProductRequest = {
       nombre: formData.name,
       descripcion: formData.description,
@@ -94,7 +92,7 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
         <CardTitle>Publicar Nuevo Producto</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-6">
           <InputField
             id="productName"
             label="Nombre del Producto"
@@ -185,13 +183,14 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
           </div>
 
           <Button
-            type="submit"
+            type="button"
+            onClick={handleSubmit}
             className="w-full"
             disabled={isLoading}
           >
             {isLoading ? "Publicando..." : "Publicar Producto"}
           </Button>
-        </form>
+        </div>
       </CardContent>
     </Card>
   )

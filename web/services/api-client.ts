@@ -18,18 +18,29 @@ export class ApiClient {
   ): Promise<T> {
     const { timeout = this.defaultTimeout, ...requestConfig } = config
 
-    const defaultHeaders: Record<string, string> = {
-      'Content-Type': 'application/json',
-    }
+    const defaultHeaders: Record<string, string> = {}
 
     const token = this.getAuthToken()
     if (token) {
       defaultHeaders.Authorization = `Bearer ${token}`
     }
 
-    const headers = {
-      ...defaultHeaders,
-      ...config.headers,
+    const headers = { ...defaultHeaders }
+    
+    if (config.headers) {
+      Object.entries(config.headers).forEach(([key, value]) => {
+        if (value !== undefined) {
+          headers[key] = value
+        }
+      })
+    }
+    
+    if (!headers['Content-Type'] && !(requestConfig.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json'
+    }
+    
+    if (requestConfig.body instanceof FormData && headers['Content-Type']) {
+      delete headers['Content-Type']
     }
 
     const controller = new AbortController()
@@ -94,15 +105,12 @@ export class ApiClient {
   }
 
   async postFormData<T>(endpoint: string, formData: FormData, config?: RequestConfig): Promise<T> {
-    const { headers, ...restConfig } = config || {}
-    
-    const formDataHeaders = { ...headers }
-    delete formDataHeaders['Content-Type']
-
     return this.request<T>(endpoint, {
-      ...restConfig,
+      ...config,
       method: 'POST',
-      headers: formDataHeaders,
+      headers: {
+        ...config?.headers
+      },
       body: formData,
     })
   }
