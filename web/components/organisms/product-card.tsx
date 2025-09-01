@@ -5,7 +5,7 @@ import { cn } from "@/utils"
 import { StarIcon, MapPin, DollarSign } from "lucide-react"
 
 interface ProductCardProps {
-  id: number
+  id: string | number
   title: string
   description: string
   price: number
@@ -15,6 +15,7 @@ interface ProductCardProps {
   location: string
   verified: boolean
   image?: string
+  available?: boolean
   className?: string
 }
 
@@ -29,11 +30,12 @@ export function ProductCard({
   location,
   verified,
   image = "/placeholder.svg",
+  available = true,
   className
 }: ProductCardProps) {
   return (
     <Card className={cn("group hover:shadow-xl transition-all duration-300 border-primary/20", className)}>
-      <CardHeader padding="none">
+      <CardHeader className="p-0">
         <div className="relative overflow-hidden rounded-t-lg">
           <img
             src={image}

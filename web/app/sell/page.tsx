@@ -4,6 +4,8 @@ import { useState } from "react"
 import { ProductForm } from "@/components/organisms/product-form"
 import { ProductListing } from "@/components/organisms/product-listing"
 import { Tabs } from "@/components/organisms/tabs"
+import { productsService, authService } from "@/services"
+import { CreateProductRequest } from "@/types/api"
 
 const mockProducts = [
   {
@@ -44,25 +46,38 @@ export default function SellPage() {
   const [products, setProducts] = useState(mockProducts)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleProductSubmit = async (data: ProductFormData) => {
+  const handleProductSubmit = async (data: CreateProductRequest, images: File[]) => {
     setIsLoading(true)
     
     try {
-      console.log("Creating product:", data)
+      if (!authService.isAuthenticated()) {
+        throw new Error("Debes iniciar sesión para crear productos")
+      }
+
+      const product = await productsService.createProduct(data)
       
+      if (images.length > 0) {
+        try {
+          await productsService.uploadProductImages(product._id, images)
+        } catch (imageError) {
+          console.warn("Error uploading images:", imageError)
+        }
+      }
+
       const newProduct = {
-        id: Date.now(),
-        title: data.name,
-        description: data.description,
-        price: data.price,
+        id: parseInt(product._id),
+        title: product.nombre,
+        description: product.descripcion,
+        price: product.precio.toString(),
         status: 'active' as const,
-        image: "/api/placeholder/300/200"
+        image: product.imagenes[0] || "/api/placeholder/300/200"
       }
       
       setProducts(prev => [newProduct, ...prev])
       
     } catch (error) {
       console.error("Error creating product:", error)
+      alert(error instanceof Error ? error.message : 'Error al crear producto')
     } finally {
       setIsLoading(false)
     }
@@ -111,7 +126,7 @@ export default function SellPage() {
 
   return (
     <div className="container py-8">
-      <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gradient mb-2">
             Vender Productos

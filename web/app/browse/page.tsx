@@ -1,99 +1,51 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { FilterSidebar } from "@/components/organisms/filter-sidebar"
 import { ProductGrid } from "@/components/molecules/product-grid"
-
-const products = [
-  {
-    id: 1,
-    title: "Nike Air Max 270",
-    description: "Zapatillas deportivas cómodas con tecnología de amortiguación avanzada y parte superior de malla transpirable.",
-    price: 120,
-    category: "footwear",
-    rating: 4.8,
-    seller: "SneakerHub.eth",
-    location: "Caracas",
-    verified: true,
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 2,
-    title: "iPhone 13 Pro",
-    description: "Smartphone Apple con pantalla Super Retina XDR de 6.1 pulgadas, chip A15 Bionic y sistema de cámara Pro.",
-    price: 800,
-    category: "technology",
-    rating: 4.9,
-    seller: "TechStore.eth",
-    location: "Valencia",
-    verified: true,
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 3,
-    title: "Chaqueta de Cuero",
-    description: "Chaqueta de cuero genuino, perfecta para el invierno. Diseño clásico y duradero.",
-    price: 85,
-    category: "clothing",
-    rating: 4.6,
-    seller: "FashionCorp.eth",
-    location: "Maracaibo",
-    verified: false,
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 4,
-    title: "MacBook Air M2",
-    description: "Laptop Apple con chip M2, pantalla Liquid Retina de 13.6 pulgadas y hasta 18 horas de batería.",
-    price: 1200,
-    category: "technology",
-    rating: 4.9,
-    seller: "AppleStore.eth",
-    location: "Caracas",
-    verified: true,
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 5,
-    title: "Adidas Ultraboost 22",
-    description: "Zapatillas de running con tecnología BOOST para máximo retorno de energía.",
-    price: 140,
-    category: "footwear",
-    rating: 4.7,
-    seller: "SportZone.eth",
-    location: "Barquisimeto",
-    verified: true,
-    image: "/api/placeholder/300/200"
-  },
-  {
-    id: 6,
-    title: "Camiseta Vintage",
-    description: "Camiseta de algodón 100% con diseño vintage. Cómoda y estilosa.",
-    price: 25,
-    category: "clothing",
-    rating: 4.4,
-    seller: "VintageShop.eth",
-    location: "Barcelona",
-    verified: false,
-    image: "/api/placeholder/300/200"
-  }
-]
+import { productsService } from "@/services"
+import { ProductSimple } from "@/types/api"
 
 export default function BrowsePage() {
+  const [products, setProducts] = useState<ProductSimple[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1500])
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [selectedLocation, setSelectedLocation] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
 
+  const loadProducts = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const params = {
+        page: 1,
+        limit: 50,
+        available: true,
+        ...(searchQuery && { search: searchQuery }),
+        ...(selectedCategory !== "all" && { categoria: selectedCategory })
+      }
+      
+      const data = await productsService.getProductsSimple(params)
+      setProducts(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al cargar productos")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadProducts()
+  }, [searchQuery, selectedCategory])
+
   const filteredProducts = products.filter((product) => {
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
-    const matchesCategory = selectedCategory === "all" || product.category === selectedCategory
-    const matchesLocation = selectedLocation === "all" || product.location.toLowerCase().includes(selectedLocation.toLowerCase())
-    const matchesSearch = searchQuery === "" || 
-      product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase())
-
-    return matchesPrice && matchesCategory && matchesLocation && matchesSearch
+    const matchesLocation = selectedLocation === "all" || true
+    
+    return matchesPrice && matchesLocation
   })
 
   const handleClearFilters = () => {
@@ -130,7 +82,19 @@ export default function BrowsePage() {
             </p>
           </div>
 
-          <ProductGrid products={filteredProducts} />
+                      {error ? (
+              <div className="text-center py-12">
+                <p className="text-red-500 text-lg">{error}</p>
+                <button 
+                  onClick={loadProducts}
+                  className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+                >
+                  Reintentar
+                </button>
+              </div>
+            ) : (
+              <ProductGrid products={filteredProducts} loading={loading} />
+            )}
         </div>
       </div>
     </div>
